@@ -1,0 +1,68 @@
+name: Deploy TO cloudfront
+
+on: deployment
+
+jobs:
+  #dump:
+  #  steps:
+  #    -
+  #      name: Dump context
+  #      uses: crazy-max/ghaction-dump-context@v1.2.0
+
+  #extract:
+  #  steps:
+  #    - run:
+  #        echo github.event.payload.environment = ${{ github.event.deployment.payload.environment }}
+  #        echo github.event.deployment.environment = ${{ github.event.deployment.environment }}
+
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [12.x]
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+
+    - name: Install and Test
+      run: |
+        yarn
+        yarn test --ci
+
+    - name: Build Production
+      if: ${{ 'production' == github.event.deployment.payload.environment }}
+      run: yarn build --production
+
+    - name: Build Development
+      run: yarn build
+      if:  ${{ 'production' != github.event.deployment.payload.environment }}
+
+    - name: Set AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+
+    - name: Copy Built files up to S3
+      run: |
+        #ls -lR build
+        aws s3 cp --recursive --exclude \*.map build s3://www.humanyze.com/actions-test/
+        aws cloudfront create-invalidation --distribution-id ${{ github.event.deployment.payload.distributionId }} --paths /index.html
+
+    - name: Create Sentry Release
+      uses: getsentry/action-release@v1.1.6
+      env:
+        SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+        SENTRY_ORG: humanyze
+        SENTRY_PROJECT: gh-actions-react
+        SENTRY_LOG_LEVEL: debug
+      with:
+        environment: ${{ github.event.deployment.payload.environment }}
+        sourcemaps: build/static/js build/static/css
