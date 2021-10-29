@@ -1,6 +1,9 @@
 import logo from './logo.svg';
 import './App.css';
 
+function goBoom(e) {
+  throw new Error('Boom!');
+}
 function App() {
   return (
     <div className="App">
