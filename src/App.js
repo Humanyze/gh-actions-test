@@ -17,6 +17,7 @@ function App() {
         >
           Learn React
         </a>
+        <button onClick={goBoom}>Make a sentry Error</button>
       </header>
     </div>
   );
