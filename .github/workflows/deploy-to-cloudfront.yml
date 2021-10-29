@@ -9,11 +9,12 @@ jobs:
   #      name: Dump context
   #      uses: crazy-max/ghaction-dump-context@v1.2.0
 
-  #extract:
-  #  steps:
-  #    - run:
-  #        echo github.event.payload.environment = ${{ github.event.deployment.payload.environment }}
-  #        echo github.event.deployment.environment = ${{ github.event.deployment.environment }}
+  extract:
+    runs-on: ubuntu-latest
+    steps:
+      - run:
+          echo github.event.payload.environment = ${{ github.event.deployment.payload.environment }}
+          echo github.event.deployment.environment = ${{ github.event.deployment.environment }}
 
   build:
     runs-on: ubuntu-latest
@@ -62,7 +63,7 @@ jobs:
         SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
         SENTRY_ORG: humanyze
         SENTRY_PROJECT: gh-actions-react
-        SENTRY_LOG_LEVEL: debug
+        SENTRY_LOG_LEVEL: info
       with:
         environment: ${{ github.event.deployment.payload.environment }}
         sourcemaps: build/static/js build/static/css
