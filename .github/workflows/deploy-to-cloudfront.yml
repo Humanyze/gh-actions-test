@@ -54,6 +54,7 @@ jobs:
     - name: Copy Built files up to S3
       run: |
         #ls -lR build
+        cat src/App.js
         aws s3 cp --recursive --exclude \*.map build s3://www.humanyze.com/actions-test/
         aws cloudfront create-invalidation --distribution-id ${{ github.event.deployment.payload.distributionId }} --paths /index.html
 
