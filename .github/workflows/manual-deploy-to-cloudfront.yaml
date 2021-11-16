@@ -70,6 +70,7 @@ jobs:
         #ls -lR build
         cat src/App.js
         aws s3 cp --recursive --exclude \*.map build s3://www.humanyze.com/actions-test/
+        echo "finished s3 uplaod"
         aws cloudfront create-invalidation --distribution-id ${{ github.event.input.distributionId }} --paths /index.html
     - name: Create Sentry Release
       uses: getsentry/action-release@v1.1.6
