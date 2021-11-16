@@ -28,8 +28,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run:
-          echo github.event.payload.environment = ${{ github.event.inputs.name.environment }}
-          echo github.event.deployment.environment = ${{ github.event.deployment.environment }}
+          echo github.event.inputs.name.environment = ${{ github.event.inputs.name.environment }}
+          echo github.event.inputs.name.distributionId = ${{ github.event.inputs.name.distributionId }}
 
   build:
     runs-on: ubuntu-latest
