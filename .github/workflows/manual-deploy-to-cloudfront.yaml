@@ -13,12 +13,15 @@ on:
         default: 'development'
         # Input has to be provided for the workflow to run
         required: true
+      distributionId:
+        description: 'Aws id of cloudfront distribution to deploy to'
+        required: true
 
 jobs:
   dump:
+    runs-on: ubuntu-latest
     steps:
-      -
-        name: Dump context
+      - name: Dump context
         uses: crazy-max/ghaction-dump-context@v1.2.0
 
   extract:
@@ -67,7 +70,7 @@ jobs:
         #ls -lR build
         cat src/App.js
         aws s3 cp --recursive --exclude \*.map build s3://www.humanyze.com/actions-test/
-        aws cloudfront create-invalidation --distribution-id ${{ github.event.deployment.payload.distributionId }} --paths /index.html
+        aws cloudfront create-invalidation --distribution-id ${{ github.event.input.distributionId }} --paths /index.html
     - name: Create Sentry Release
       uses: getsentry/action-release@v1.1.6
       env:
