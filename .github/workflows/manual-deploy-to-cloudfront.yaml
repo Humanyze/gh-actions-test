@@ -13,9 +13,12 @@ on:
         default: 'development'
         # Input has to be provided for the workflow to run
         required: true
-      distributionId:
-        description: 'Aws id of cloudfront distribution to deploy to'
-        required: true
+
+env:
+  cloudfront_distro_selector: "clouddront_distro_${{ github.event.inputs.environment }}"
+  cloudfront_distro_production: E4FSMYRMNGBT1
+  cloudfront_distro_development: XXXXXXXXXXXX
+  # if the environment value does not match an item on this list the value will be a blank ''.
 
 jobs:
   dump:
@@ -29,7 +32,7 @@ jobs:
     steps:
       - run:
           echo github.event.inputs.environment = ${{ github.event.inputs.environment }}
-          echo github.event.inputs.distributionId = ${{ github.event.inputs.distributionId }}
+          echo distributionId = ${{ env[ env.cloudfront_distro_selector ] }}
 
   build:
     runs-on: ubuntu-latest
@@ -71,7 +74,7 @@ jobs:
         cat src/App.js
         aws s3 cp --recursive --exclude \*.map build s3://www.humanyze.com/actions-test/
         echo "finished s3 uplaod"
-        aws cloudfront create-invalidation --distribution-id ${{ github.event.inputs.distributionId }} --paths /index.html
+        aws cloudfront create-invalidation --distribution-id ${{ env[ env.cloudfront_distro_selector ] }} --paths /index.html
 
     - name: toggle failure with secret
       env:
