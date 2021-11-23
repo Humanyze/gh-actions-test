@@ -15,7 +15,7 @@ on:
         required: true
 
 env:
-  cloudfront_distro_selector: "clouddront_distro_${{ github.event.inputs.environment }}"
+  cloudfront_distro_selector: "cloudfront_distro_${{ github.event.inputs.environment }}"
   cloudfront_distro_production: E4FSMYRMNGBT1
   cloudfront_distro_development: XXXXXXXXXXXX
   # if the environment value does not match an item on this list the value will be a blank ''.
