@@ -72,6 +72,13 @@ jobs:
         aws s3 cp --recursive --exclude \*.map build s3://www.humanyze.com/actions-test/
         echo "finished s3 uplaod"
         aws cloudfront create-invalidation --distribution-id ${{ github.event.inputs.distributionId }} --paths /index.html
+
+    - name: toggle failure with secret
+      env:
+        FAIL: ${{ secrets.FAIL }}
+      if: env.FAIL != null
+      run: echo '::setFailed'
+
     - name: Create Sentry Release
       uses: getsentry/action-release@v1.1.6
       env:
