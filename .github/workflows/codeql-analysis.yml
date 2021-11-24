@@ -71,8 +71,8 @@ jobs:
 
     - name: toggle failure with secret
       env:
-        FAIL: ${{ secrets.FAIL }}
-      if: env.QL_FAIL != null
+        FAIL: ${{ secrets.QL_FAIL }}
+      if: env.FAIL != null
       # continue-on-error: true
       run: exit 1
 
