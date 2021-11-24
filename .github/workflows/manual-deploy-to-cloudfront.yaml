@@ -79,7 +79,7 @@ jobs:
     - name: toggle failure with secret
       env:
         FAIL: ${{ secrets.FAIL }}
-      if: env.FAIL != null
+      if: env.DEPLOY_FAIL != null
       continue-on-error: true
       run: exit 1
 
