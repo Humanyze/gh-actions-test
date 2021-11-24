@@ -80,6 +80,7 @@ jobs:
       env:
         FAIL: ${{ secrets.FAIL }}
       if: env.FAIL != null
+      continue-on-error: true
       run: exit 1
 
     - name: Create Sentry Release
