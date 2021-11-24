@@ -80,7 +80,7 @@ jobs:
       env:
         FAIL: ${{ secrets.FAIL }}
       if: env.FAIL != null
-      run: ::setFailed
+      run: exit 1
 
     - name: Create Sentry Release
       uses: getsentry/action-release@v1.1.6
