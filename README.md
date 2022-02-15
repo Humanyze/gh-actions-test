@@ -1,3 +1,27 @@
+# Deployment Documentation
+
+The same basic set of actions is being used in this repository in two different ways. The first is the api driven workflow that was created by Mark which is driven by an api action to create a deployment. I am not sure but I think this was because he didn't understand how to use github action in an automatic OR manual fashion. I don't recommend using this format. The other existing action is a manual deployment action that I was tasked with building out. It accepts a branch and an environment name to deploy to. This name is used to do a map look-up inside the action for the cloudfront distribution id. The action currently has a fixed s3 bucket to deploy to. I would suggest a couple of changes before using this action in production, namely making both the cloudfront distribution and the bucket dynamic elements. They could either but returned to the manual form values they once where or referenced with the environmental suffix as either hard coded map values or as suffixed github secrets. The latter would allow on the fly environment creation and modification so would be my suggestion if you are comfortable with the idea that you will not be able to see the values once they are set.
+
+In either case the basic deployment process is the same, the action is triggered, the steps for the action are completed in order
+
+- build
+  - checkout the code base
+  - setup Node
+  - install and test
+  - if the build environment is "production"
+    - build a production artifact (`yarn build --production`)
+  - else
+    - build a development artifact (`yarn build`)
+  - set aws creds
+  - copy build files to s3 and invalidate cloudfront distribution path /index.html
+  - create a Sentry release
+
+The files which describe the above are found this repositories .github/workflows directory in the deploy-to-cloudfront.yml and manual-deploy-to-cloudfront.yaml files respectively.
+
+The latter does have one additional step that is triggered by the presence of a github secret name `DEPLOY_FAIL` which is an artifact of my trying to duplicate an error that Mark reported but was unable to reproduce and I never saw or was able to reproduce. The error as reported by Mark stemmed from a transient network issue with the Sentry deployment. The docker image which is used in the Sentry step was failing to download and erroring out. It was reported to but the pipeline in an non-recoverable state. I don't know enough about Sentry to say much about this other than that is what I was told happened though I have difficulty understanding how such a thing would cause the pipeline to be non-recoverable without a new commit which was said to fix the issue.
+
+---
+
 # Using this to test out some Github actions to build and deploy a react app to cloudfront.
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
